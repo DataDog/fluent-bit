@@ -36,6 +36,9 @@ on:
       gpg_private_key:
         description: The GPG key to use for signing the packages.
         required: false
+      gpg_private_key_passphrase:
+        description: The GPG key passphrase to use for signing the packages.
+        required: false
 
 jobs:
   call-build-packages:
@@ -63,7 +66,7 @@ jobs:
           replace-with: '$1-$2'
           flags: 'g'
 
-      - name: Build the ${{ matrix.distro }} artifacts
+      - name: fluent-bit - ${{ matrix.distro }} artifacts
         run: |
           ./build.sh
         env:
@@ -71,6 +74,20 @@ jobs:
           FLB_DISTRO: ${{ matrix.distro }}
           FLB_OUT_DIR: staging
           FLB_BRANCH: ${{ inputs.branch }}
+          FLB_TD: "Off"
+          CMAKE_INSTALL_PREFIX: /opt/fluent-bit/
+        working-directory: packaging
+
+      - name: td-agent-bit - ${{ matrix.distro }} artifacts
+        run: |
+          ./build.sh
+        env:
+          FLB_VERSION: ${{ inputs.version }}
+          FLB_DISTRO: ${{ matrix.distro }}
+          FLB_OUT_DIR: staging
+          FLB_BRANCH: ${{ inputs.branch }}
+          FLB_TD: "On"
+          CMAKE_INSTALL_PREFIX: /opt/td-agent-bit/
         working-directory: packaging
 
       - name: Upload the ${{ matrix.distro }} artifacts
@@ -146,6 +163,7 @@ jobs:
         uses: crazy-max/ghaction-import-gpg@v4
         with:
           gpg_private_key: ${{ secrets.gpg_private_key }}
+          passphrase: ${{ secrets.gpg_private_key_passphrase }}
 
       - name: Create repositories on staging now
         # We sync down what we have for the release directories.
