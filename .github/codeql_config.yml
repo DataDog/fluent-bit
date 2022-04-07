@@ -2,3 +2,6 @@ name: "CodeQL config"
 
 paths: 
   - 'plugins/out_datadog/**'
+
+paths-ignore:
+  - 'lib/**'
