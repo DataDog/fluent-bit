@@ -1,4 +1,4 @@
 name: "CodeQL config"
 
-paths-ignore: 
-  - 'lib/onigmo/test.rb'
+paths: 
+  - 'plugins/out_datadog/**'
